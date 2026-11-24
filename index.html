@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preanesthetic Visit & Assessment Simulator | Dr. Hussam Kareem</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['Cairo', 'sans-serif'],
+                        english: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .en-text {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+        .en-block {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+            text-align: left;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .tab-content {
+            animation: fadeIn 0.25s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-3 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20 shrink-0">
+                        <i data-lucide="clipboard-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h1 class="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                <span class="en-text">Preanesthetic Assessment</span> <span class="text-teal-600 dark:text-teal-400">Simulator</span>
+                            </h1>
+                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                                تقييم ما قبل التخدير
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            محاضرة: <span class="font-bold text-slate-700 dark:text-slate-300 en-text">Dr. Hussam Kareem</span> (Anesthesiologist)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="toggleArabicMode()" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 transition-all shadow-sm">
+                        <i data-lucide="languages" class="w-4 h-4"></i>
+                        <span id="arabicBtnLabel">إخفاء الشرح العربي</span>
+                    </button>
+
+                    <button onclick="toggleDarkMode()" aria-label="Toggle Theme" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all">
+                        <i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Focused Navigation Tabs -->
+            <nav class="flex space-x-1 space-x-reverse overflow-x-auto pb-2 pt-1 no-scrollbar" aria-label="Tabs">
+                <button onclick="switchTab('overview')" id="tab-overview" class="nav-tab flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-teal-600 text-white shadow-sm">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>1. الملخص والسيرة المرضية</span>
+                </button>
+                <button onclick="switchTab('airway')" id="tab-airway" class="nav-tab flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                    <i data-lucide="scan-face" class="w-4 h-4"></i>
+                    <span>2. تصنيف ASA ومجرى الهواء</span>
+                </button>
+                <button onclick="switchTab('labs')" id="tab-labs" class="nav-tab flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                    <i data-lucide="test-tubes" class="w-4 h-4"></i>
+                    <span>3. الفحوصات والصيام (NPO)</span>
+                </button>
+                <button onclick="switchTab('practice')" id="tab-practice" class="nav-tab flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>4. محاكي العيادة والأسئلة</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: OVERVIEW, GOALS, COUNSELING & MEDICAL HISTORY      -->
+        <!-- ========================================================= -->
+        <section id="view-overview" class="tab-content space-y-6">
+            <!-- Definition & 3 Key Components -->
+            <div class="bg-gradient-to-l from-teal-50 to-emerald-50 dark:from-teal-950/40 dark:to-slate-900 border border-teal-200 dark:border-teal-800/60 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-2xl bg-teal-600/15 text-teal-600 dark:text-teal-400 shrink-0">
+                        <i data-lucide="stethoscope" class="w-7 h-7"></i>
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                            ما هي زيارة وتقييم ما قبل التخدير؟ <span class="en-text text-teal-700 dark:text-teal-400 text-sm">(Preanesthetic Visit & Assessment)</span>
+                        </h2>
+                        <div class="en-block text-sm sm:text-base text-slate-800 dark:text-slate-200 bg-white/80 dark:bg-slate-950/60 p-3.5 rounded-xl border border-teal-200/50 dark:border-slate-800 font-medium">
+                            A <strong>clinical evaluation</strong> performed <strong>before</strong> a patient undergoes surgery or another procedure requiring anesthesia.
+                        </div>
+                        <p class="ar-explain text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                            هي تقييم سريري شامل يُجرى <strong>قبل</strong> خضوع المريض للجراحة أو أي إجراء يتطلب تخديراً، وتتكون من <strong>3 ركائز أساسية</strong>: (1) مراجعة السيرة المرضية <span class="en-text">Medical history review</span>، (2) الفحص السريري <span class="en-text">Physical examination</span>، و(3) الفحوصات <span class="en-text">Investigations</span>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 5 Goals + 4 Counseling Benefits -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-white/90 dark:bg-slate-900/90 p-4 rounded-xl border border-teal-100 dark:border-slate-800 space-y-2.5">
+                        <h3 class="text-sm font-extrabold text-teal-800 dark:text-teal-300 flex items-center gap-2">
+                            <i data-lucide="target" class="w-4 h-4"></i>
+                            <span>الأهداف الخمسة للتقييم (5 Goals of Assessment):</span>
+                        </h3>
+                        <ul class="space-y-1.5 text-xs sm:text-sm">
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-teal-600 en-text">1.</span><span><strong class="en-text">Identify potential risks</strong> — تحديد المخاطر المحتملة على سلامة المريض.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-teal-600 en-text">2.</span><span><strong class="en-text">Develop a plan</strong> — وضع خطة لتقليل هذه المخاطر.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-teal-600 en-text">3.</span><span><strong class="en-text">Optimize medical condition</strong> — تحسين الحالة الطبية للمريض قبل العملية.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-teal-600 en-text">4.</span><span><strong class="en-text">Educate the patient</strong> — توعية المريض بمخاطر وفوائد التخدير والجراحة.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-teal-600 en-text">5.</span><span><strong class="en-text">Obtain informed consent</strong> — أخذ الموافقة المستنيرة من المريض.</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white/90 dark:bg-slate-900/90 p-4 rounded-xl border border-sky-100 dark:border-slate-800 space-y-2.5">
+                        <h3 class="text-sm font-extrabold text-sky-800 dark:text-sky-300 flex items-center gap-2">
+                            <i data-lucide="message-square-heart" class="w-4 h-4"></i>
+                            <span>أهمية تثقيف وإرشاد المريض (Patient Education & Counseling):</span>
+                        </h3>
+                        <ul class="space-y-1.5 text-xs sm:text-sm">
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-sky-600 en-text">1.</span><span><strong class="en-text">Reduces anxiety and stress</strong> — يقلل القلق والتوتر.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-sky-600 en-text">2.</span><span><strong class="en-text">Improves patient satisfaction</strong> — يحسّن رضا المريض.</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-sky-600 en-text">3.</span><span><strong class="en-text">Increases compliance</strong> — يزيد الالتزام بالتعليمات (مثل الصيام).</span></li>
+                            <li class="flex items-start gap-2"><span class="font-extrabold text-sky-600 en-text">4.</span><span><strong class="en-text">Improves outcomes</strong> — يحسّن النتائج الجراحية والتخديرية.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History Checklist Grid -->
+            <div class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5 text-teal-600"></i>
+                    <span>بنود السيرة المرضية الكاملة (1) Medical History Review</span>
+                </h2>
+                <div id="historyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: ASA CLASSIFICATION & AIRWAY (LEMON & MALLAMPATI)   -->
+        <!-- ========================================================= -->
+        <section id="view-airway" class="tab-content hidden space-y-6">
+            
+            <!-- ASA Classification Interactive Selector -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">
+                            تصنيف الجمعية الأمريكية لأطباء التخدير <span class="en-text text-teal-600 dark:text-teal-400 text-sm">(ASA Physical Status Classification)</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">اضغط على أي فئة لعرض الوصف السريري والأمثلة الشائعة:</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 en-text">ASA I — ASA VI</span>
+                </div>
+
+                <div id="asaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </div>
+
+            <!-- Airway Examination: LEMON & Mallampati -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- LEMON Test -->
+                <div class="lg:col-span-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 text-sm en-text">LEMON</span>
+                            <span>اختبار تقييم مجرى الهواء</span>
+                        </h3>
+                        <span class="text-xs font-bold text-rose-600 dark:text-rose-400">فحص الأسنان مهم جداً!</span>
+                    </div>
+
+                    <div id="lemonList" class="space-y-2.5"></div>
+
+                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 text-xs sm:text-sm">
+                        <strong class="text-rose-800 dark:text-rose-300">تنبيه فحص الأسنان (Teeth Health):</strong>
+                        <span class="text-slate-700 dark:text-slate-300"> لا تنسَ السؤال وفحص الأسنان المكسورة (<span class="en-text font-semibold">Chopped teeth</span>)، المفقودة (<span class="en-text font-semibold">Missing teeth</span>)، أو المتخلخلة (<span class="en-text font-semibold">Loose teeth</span>).</span>
+                    </div>
+                </div>
+
+                <!-- Mallampati Interactive Class Checker -->
+                <div class="lg:col-span-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">
+                            نظام مالامباتي <span class="en-text text-teal-600 dark:text-teal-400 text-sm">(Mallampati Scoring System)</span>
+                        </h3>
+                        <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200">
+                            Class 3 & 4 = صعوبة تنبيب
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        يجلس المريض مقابل طبيب التخدير مع فتح الفم وإخراج اللسان (<span class="en-text">mouth open & tongue protruded</span>) دون تصويت:
+                    </p>
+
+                    <div id="mallampatiGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: INVESTIGATIONS & FASTING CALCULATOR (NPO)          -->
+        <!-- ========================================================= -->
+        <section id="view-labs" class="tab-content hidden space-y-6">
+            
+            <!-- Interactive Fasting Time Checker -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="clock" class="w-5 h-5 text-teal-600"></i>
+                            <span>تعليمات الصيام قبل التخدير <span class="en-text text-teal-600 dark:text-teal-400 text-sm">(Minimum Fasting Times / NPO)</span></span>
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">قاعدة الصيام القياسية (2 - 4 - 6 - 8 ساعات) لمنع الاستنشاق الرئوي:</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="fastingGrid"></div>
+            </div>
+
+            <!-- Interactive Pre-Op Test Recommender by Surgery Grade & ASA -->
+            <div class="bg-gradient-to-l from-indigo-50 to-sky-50 dark:from-indigo-950/40 dark:to-slate-900 border border-indigo-200 dark:border-indigo-800/60 rounded-2xl p-5 shadow-sm space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                            <span>محدد الفحوصات حسب درجة الجراحة وفئة ASA</span>
+                        </h3>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">اختر درجة العملية وفئة المريض لمعرفة الفحوصات المطلوبة حسب جدول المحاضرة:</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="surgGradeSelect" onchange="updateSurgeryMatrix()" class="px-3 py-2 rounded-xl border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-900 text-xs sm:text-sm font-bold outline-none">
+                            <option value="Minor">جراحة صغرى (Minor Surgery)</option>
+                            <option value="Intermediate">جراحة متوسطة (Intermediate)</option>
+                            <option value="Major" selected>جراحة كبرى / معقدة (Major / Complex)</option>
+                        </select>
+                        <select id="asaGradeSelect" onchange="updateSurgeryMatrix()" class="px-3 py-2 rounded-xl border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-900 text-xs sm:text-sm font-bold outline-none en-text">
+                            <option value="ASA 1">ASA 1</option>
+                            <option value="ASA 2">ASA 2</option>
+                            <option value="ASA 3/4" selected>ASA 3 / 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="surgeryMatrixOutput" class="bg-white/90 dark:bg-slate-950/70 p-4 rounded-xl border border-indigo-200/70 dark:border-slate-800"></div>
+            </div>
+
+            <!-- Specific Laboratory & Imaging Indications -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">
+                    دواعي طلب الفحوصات المختبرية والشعاعية <span class="en-text text-teal-600 dark:text-teal-400 text-sm">(Test Indications)</span>
+                </h3>
+                <div id="labIndicationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: PROCEDURAL PREANESTHETIC CLINIC & MCQ ENGINE       -->
+        <!-- ========================================================= -->
+        <section id="view-practice" class="tab-content hidden space-y-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-6 h-6 text-teal-600"></i>
+                            <span>مولد الحالات والأسئلة اللحظي (Preanesthetic Quiz Engine)</span>
+                        </h2>
+                        <span id="seedBadge" class="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 en-text">
+                            SEED: #0000
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        يشمل أسئلة المحاضرة الخمسة (<span class="en-text font-semibold">Q1–Q5</span>) بالإضافة إلى سيناريوهات متجددة في <span class="en-text">ASA, LEMON, Mallampati, Labs, & NPO</span>.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-xl text-center">
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">النتيجة</span>
+                        <span id="quizScoreDisplay" class="text-base font-extrabold text-teal-700 dark:text-teal-300 en-text">0 / 12</span>
+                    </div>
+                    <button onclick="generateQuiz()" class="px-4 py-2.5 rounded-xl bg-gradient-to-l from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-teal-500/20 flex items-center gap-2 transition-all active:scale-95">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>توليد أسئلة جديدة</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="quizContainer" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 px-4 mt-10">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <div>
+                محاكي وملخص محاضرة <span class="en-text font-bold text-slate-700 dark:text-slate-300">A Preanesthetic Visit and Assessment</span> للدكتور حسام كريم
+            </div>
+            <div>
+                مصمم للمراجعة السريعة والتدريب السريري المتجدد
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- JAVASCRIPT DATA & INTERACTIVE ENGINE                      -->
+    <!-- ========================================================= -->
+    <script>
+        let showArabic = true;
+        let currentQuestions = [];
+        let userAnswers = {};
+
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function pickRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        // =========================================================
+        // DATA DEFINITIONS
+        // =========================================================
+        const historyItems = [
+            { titleEn: 'Patient’s Identity', descEn: 'Name, gender, age, address, etc.', descAr: 'هوية المريض: الاسم، الجنس، العمر، والعنوان.' },
+            { titleEn: 'Chief Complaint', descEn: 'What is happening? Why the patient needs surgery? Ask for surgeon name.', descAr: 'الشكوى الرئيسية: سبب الحاجة للعملية الجراحية واسم الجراح.' },
+            { titleEn: 'Past Medical History', descEn: 'Chronic diseases: Hypertension, Diabetes, Rheumatoid arthritis, thyroid, neurological, Asthma, COPD.', descAr: 'السوابق المرضية: الضغط، السكري، الروماتويد، الغدة الدرقية، الأمراض العصبية، الربو، COPD.' },
+            { titleEn: 'Past Surgical History', descEn: 'Previous surgeries, previous anesthesia type, and any complications.', descAr: 'السوابق الجراحية والتخديرية: العمليات السابقة ونوع التخدير وأي مضاعفات.' },
+            { titleEn: 'Current Medication', descEn: 'Chronic illness drugs, steroids (and for how long), and herbal medications.', descAr: 'الأدوية الحالية: أدوية الأمراض المزمنة، الستيرويدات ومدة استخدامها، والأعشاب.' },
+            { titleEn: 'Allergies', descEn: 'Sulfa, latex, antibiotics, drugs, food items like eggs.', descAr: 'الحساسية: السلفا، اللاتكس، المضادات الحيوية، الأدوية، والأطعمة مثل البيض.' },
+            { titleEn: 'Family History', descEn: 'Cholinesterase deficiency (Succinylcholine apnea), Malignant hyperthermia.', descAr: 'السوابق العائلية: نقص الكولين إستراز (توقف التنفس مع السكسينيل كولين) أو فرط الحرارة الخبيث.' },
+            { titleEn: 'Social, Occupation & LMP', descEn: 'Smoking, alcohol, illegal drugs; chemical exposure at work; LMP / Pregnancy.', descAr: 'التدخين والكحول والمخدرات؛ التعرض المهني للكيماويات؛ آخر دورة شهرية والحمل.' },
+            { titleEn: 'Review of Systems', descEn: 'Respiratory, Cardiac, GIT, Urogenital, CNS, etc.', descAr: 'مراجعة أجهزة الجسم: التنفسي، القلبي، الهضمي، البولي التناسلي، العصبي.' }
+        ];
+
+        const asaClasses = [
+            { code: 'ASA I', color: 'emerald', descEn: 'A normal healthy patient', descAr: 'مريض سليم طبيعياً بدون أمراض جهازية.' },
+            { code: 'ASA II', color: 'teal', descEn: 'A patient with mild systemic disease', descAr: 'مريض لديه مرض جهازي خفيف ومسيطر عليه (مثل ضغط أو سكري مسيطر عليه، تدخين).' },
+            { code: 'ASA III', color: 'amber', descEn: 'A patient with severe systemic disease', descAr: 'مريض لديه مرض جهازي شديد يحد من نشاطه دون تهديد مباشر للحياة.' },
+            { code: 'ASA IV', color: 'orange', descEn: 'A patient with severe systemic disease that is a constant threat to life', descAr: 'مريض لديه مرض جهازي شديد يشكل تهديداً مستمراً للحياة.' },
+            { code: 'ASA V', color: 'rose', descEn: 'A moribund patient who is not expected to survive without the operation', descAr: 'مريض يحتضر لا يُتوقع بقاؤه على قيد الحياة دون إجراء العملية فوراً.' },
+            { code: 'ASA VI', color: 'purple', descEn: 'A declared brain-dead patient whose organs are being removed for donor purposes', descAr: 'مريض متوفى دماغياً تُستأصل أعضاؤه للتبرع.' }
+        ];
+
+        const lemonItems = [
+            { letter: 'L', titleEn: 'Look externally', descEn: 'Facial trauma, large incisors, teeth health, beard or moustache, large tongue.', descAr: 'النظر الخارجي: رضوض الوجه، القواطع الكبيرة، صحة الأسنان، اللحية/الشارب، كبر اللسان.' },
+            { letter: 'E', titleEn: 'Evaluate 3-3-2 rule', descEn: 'Incisors distance (3 fingers), hyoid-mental distance (3 fingers), thyroid-to-mouth floor (2 fingers).', descAr: 'قاعدة 3-3-2: فتحة الفم 3 أصابع، المسافة الذقنية اللامية 3 أصابع، والدرقية إلى قاع الفم إصبعان.' },
+            { letter: 'M', titleEn: 'Mallampati score ≥ 3', descEn: 'Class 3 or 4 predicts difficult intubation.', descAr: 'درجة مالامباتي 3 أو 4 تشير لصعوبة التنبيب.' },
+            { letter: 'O', titleEn: 'Obstruction', descEn: 'Trauma, epiglottitis, peritonsillar abscess.', descAr: 'وجود انسداد: رضوض، التهاب لسان المزمار، خراج حول اللوزة.' },
+            { letter: 'N', titleEn: 'Neck mobility', descEn: 'Ability to flex and extend the neck for sniffing position.', descAr: 'حركة الرقبة: مرونة ثني ومد الرقبة أثناء التنبيب.' }
+        ];
+
+        const mallampatiClasses = [
+            { cls: 'Class 1', risk: 'Easy (سهل)', color: 'emerald', descEn: 'Faucial pillars, soft palate, and uvula visible.', descAr: 'تظهر الأقواس الحنكية، الحنك الرخو، واللهاة كاملة.' },
+            { cls: 'Class 2', risk: 'Easy (سهل)', color: 'teal', descEn: 'Faucial pillars and soft palate visible; uvula masked by base of tongue.', descAr: 'تظهر الأقواس الحنكية والحنك الرخو، وتغطي قاعدة اللسان اللهاة.' },
+            { cls: 'Class 3', risk: 'Difficult Intubation!', color: 'amber', descEn: 'Only soft palate visible.', descAr: 'يظهر الحنك الرخو فقط (توقع صعوبة تنبيب).' },
+            { cls: 'Class 4', risk: 'Difficult Intubation!', color: 'rose', descEn: 'Soft palate not visible.', descAr: 'لا يظهر الحنك الرخو نهائياً (صعوبة تنبيب عالية).' }
+        ];
+
+        const fastingData = [
+            { hours: '2 Hours', titleEn: 'Clear liquids', titleAr: 'السوائل الصافية (الماء، العصير الصافي بدون لب)', color: 'sky' },
+            { hours: '4 Hours', titleEn: 'Human breast milk', titleAr: 'حليب الأم الطبيعي (للرضّع)', color: 'teal' },
+            { hours: '6 Hours', titleEn: 'Light meal & non-human milk', titleAr: 'الوجبات الخفيفة والحليب الصناعي/البقري', color: 'amber' },
+            { hours: '8 Hours', titleEn: 'Fried fatty food and meat', titleAr: 'الأطعمة المقلية والدهنية واللحوم', color: 'rose' }
+        ];
+
+        const surgeryMatrixTable = {
+            'Minor': {
+                'ASA 1': { en: 'No routine preoperative tests recommended.', ar: 'لا يُوصى بأي فحوصات روتينية قبل العملية.' },
+                'ASA 2': { en: 'No routine preoperative tests recommended.', ar: 'لا يُوصى بأي فحوصات روتينية قبل العملية.' },
+                'ASA 3/4': { en: 'Consider renal function in those at risk of acute kidney injury (AKI); Consider electrocardiogram (ECG).', ar: 'يُنظر في فحص وظائف الكلى للمعرضين لإصابة الكلى الحادة (AKI) وتخطيط القلب (ECG).' }
+            },
+            'Intermediate': {
+                'ASA 1': { en: 'No routine preoperative tests recommended.', ar: 'لا يُوصى بأي فحوصات روتينية قبل العملية.' },
+                'ASA 2': { en: 'Consider renal function in those at risk of AKI; Consider ECG.', ar: 'يُنظر في فحص وظائف الكلى للمعرضين لـ AKI وتخطيط القلب (ECG).' },
+                'ASA 3/4': { en: 'Check renal function and ECG; Consider full blood count (FBC), coagulation screen, and lung function tests.', ar: 'افحص وظائف الكلى و ECG؛ وفكّر في صورة الدم الكاملة (FBC)، التخثر، ووظائف الرئة.' }
+            },
+            'Major': {
+                'ASA 1': { en: 'Perform FBC; Consider renal function in those at risk of AKI; Consider ECG if >65y.', ar: 'أجرِ صورة الدم الكاملة (FBC)؛ فكّر في وظائف الكلى لخطر AKI؛ وفكّر في ECG إذا كان العمر > 65 سنة.' },
+                'ASA 2': { en: 'Perform FBC, renal function, and ECG.', ar: 'أجرِ صورة الدم الكاملة (FBC)، وظائف الكلى، وتخطيط القلب (ECG).' },
+                'ASA 3/4': { en: 'Perform FBC, renal function, and ECG; Consider coagulation screen and lung function tests.', ar: 'أجرِ FBC ووظائف الكلى و ECG؛ وفكّر في فحص التخثر ووظائف الرئة.' }
+            }
+        };
+
+        const labIndications = [
+            { test: 'CBC', indEn: 'Major surgery requiring group & screen or cross-match; chronic CV, pulmonary, renal, or hepatic disease; malignancy; known/suspected anemia; bleeding diathesis; patient <1 yr of age.', indAr: 'الجراحات الكبرى التي تحتاج مطابقة دم؛ الأمراض المزمنة (القلبية/الرئوية/الكلوية/الكبدية)؛ الأورام؛ فقر الدم؛ اضطرابات النزف؛ أو عمر أقل من سنة.' },
+            { test: 'Sickle Cell Screen', indEn: 'Genetically predisposed patient (perform hemoglobin electrophoresis if screen is positive).', indAr: 'المرضى المعرضون وراثياً لفقر الدم المنجلي (يُجرى رحلان الهيموغلوبين إذا كانت النتيجة موجبة).' },
+            { test: 'INR, aPTT', indEn: 'Anticoagulant therapy, bleeding diathesis, liver disease.', indAr: 'العلاج بمضادات التخثر، قابلية النزف، أو أمراض الكبد.' },
+            { test: 'Electrolytes & Creatinine', indEn: 'Hypertension, renal disease, DM, pituitary/adrenal disease, vascular disease, digoxin, diuretics, or drugs affecting electrolytes.', indAr: 'الضغط، أمراض الكلى، السكري، أمراض النخامية/الكظرية، أمراض الأوعية، الديجوكسين، والمدرات.' },
+            { test: 'Fasting Glucose Level', indEn: 'Diabetes Mellitus (DM) — repeat on day of surgery.', indAr: 'مرضى السكري (ويُعاد الفحص صباح يوم الجراحة).' },
+            { test: 'Pregnancy (β-hCG)', indEn: 'Women of reproductive age.', indAr: 'النساء في سن الإنجاب.' },
+            { test: 'ECG', indEn: 'Heart disease, DM, cardiac risk factors; subarachnoid/intracranial hemorrhage, CVA, head trauma.', indAr: 'أمراض القلب، السكري، عوامل الخطورة القلبية؛ النزف تحت العنكبوتية أو الدماغي، الجلطة الدماغية، رضوض الرأس.' },
+            { test: 'Chest Radiograph', indEn: 'Patients with new or worsening respiratory symptoms or signs.', indAr: 'المرضى الذين لديهم أعراض أو علامات تنفسية جديدة أو متفاقمة.' }
+        ];
+
+        // =========================================================
+        // PROCEDURAL QUESTION GENERATORS
+        // =========================================================
+        function buildMCQ(qEn, qAr, correctText, wrongTexts, expEn, expAr) {
+            return {
+                uid: `${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+                qEn, qAr,
+                options: shuffleArray([
+                    { text: correctText, isCorrect: true },
+                    ...wrongTexts.map(w => ({ text: w, isCorrect: false }))
+                ]),
+                expEn, expAr
+            };
+        }
+
+        const qBankGenerators = [
+            // Lecture Q1 - Q5
+            () => buildMCQ(
+                'What is the primary purpose of a preanesthetic visit and assessment?',
+                'ما هو الغرض الأساسي من زيارة وتقييم ما قبل التخدير؟',
+                'To assess the patient before anesthesia and surgery',
+                ['To prescribe postoperative medications', 'To evaluate the patient after surgery', 'To replace the surgeon’s evaluation'],
+                'A preanesthetic visit and assessment is a clinical evaluation performed before surgery or anesthesia.',
+                'زيارة ما قبل التخدير هي تقييم سريري يُجرى قبل الجراحة والتخدير.'
+            ),
+            () => buildMCQ(
+                'Which of the following is NOT a goal of preanesthetic assessment?',
+                'أي مما يلي ليس من أهداف تقييم ما قبل التخدير؟',
+                'Perform the surgical procedure',
+                ['Identify potential anesthesia risks', 'Optimize the patient’s medical condition', 'Obtain informed consent and educate the patient'],
+                'Performing the surgical procedure is the surgeon’s role, not a goal of preanesthetic assessment.',
+                'إجراء العملية الجراحية هو دور الجراح وليس هدفاً من أهداف تقييم ما قبل التخدير.'
+            ),
+            () => buildMCQ(
+                'Which of the following is considered a key component of preanesthetic assessment?',
+                'أي مما يلي يُعد مكوناً أساسياً من مكونات تقييم ما قبل التخدير؟',
+                'Medical history review (along with Physical examination and Investigations)',
+                ['Postoperative ICU admission', 'Surgical technique selection', 'Routine blood transfusion for all patients'],
+                'The 3 key components are: (1) Medical history review, (2) Physical examination, and (3) Investigations.',
+                'المكونات الثلاثة الأساسية هي: مراجعة السيرة المرضية، الفحص السريري، والفحوصات.'
+            ),
+            () => buildMCQ(
+                'Asking about hypertension and diabetes is part of which section of preanesthetic assessment?',
+                'السؤال عن ارتفاع ضغط الدم والسكري يندرج ضمن أي جزء من تقييم ما قبل التخدير؟',
+                'Past medical history',
+                ['Physical examination', 'Investigations', 'Airway assessment'],
+                'Hypertension, diabetes, asthma, COPD, and thyroid diseases are evaluated under Past Medical History.',
+                'ارتفاع الضغط والسكري والربو تُسأل ضمن السوابق المرضية (Past medical history).'
+            ),
+            () => buildMCQ(
+                'A patient with mild systemic disease belongs to which ASA class?',
+                'المريض الذي يعاني من مرض جهازي خفيف ينتمي إلى أي فئة من تصنيف ASA؟',
+                'ASA II',
+                ['ASA I', 'ASA III', 'ASA IV'],
+                'ASA I = normal healthy; ASA II = mild systemic disease; ASA III = severe systemic disease; ASA IV = constant threat to life.',
+                'ASA II تشير إلى مريض لديه مرض جهازي خفيف.'
+            ),
+            // Dynamic Fasting Times Generator
+            () => {
+                const scenario = pickRandom([
+                    { food: 'clear liquids (water / pulp-free juice)', arFood: 'السوائل الصافية (الماء)', ans: '2 hours', wrongs: ['4 hours', '6 hours', '8 hours'] },
+                    { food: 'human breast milk', arFood: 'حليب الأم الطبيعي', ans: '4 hours', wrongs: ['2 hours', '6 hours', '8 hours'] },
+                    { food: 'a light meal or non-human milk', arFood: 'وجبة خفيفة أو حليب غير بشري', ans: '6 hours', wrongs: ['2 hours', '4 hours', '8 hours'] },
+                    { food: 'fried fatty food and meat', arFood: 'طعام مقلي دهني ولحوم', ans: '8 hours', wrongs: ['2 hours', '4 hours', '6 hours'] }
+                ]);
+                return buildMCQ(
+                    `What is the minimum preoperative fasting time required after consuming ${scenario.food}?`,
+                    `ما هو الحد الأدنى لمدة الصيام المطلوبة قبل التخدير بعد تناول ${scenario.arFood}؟`,
+                    scenario.ans,
+                    scenario.wrongs,
+                    'Minimum fasting times: Clear liquids = 2h; Human breast milk = 4h; Light meal & non-human milk = 6h; Fried fatty food & meat = 8h.',
+                    'قاعدة الصيام: السوائل الصافية ساعتان، حليب الأم 4 ساعات، الوجبة الخفيفة والحليب 6 ساعات، الدهون واللحوم 8 ساعات.'
+                );
+            },
+            // LEMON & Mallampati Generator
+            () => buildMCQ(
+                'In the LEMON airway assessment test, what does the "3-3-2 rule" evaluate?',
+                'في اختبار LEMON لتقييم مجرى الهواء، ماذا تقيّم قاعدة "3-3-2"؟',
+                'Incisors distance (3 fingers), hyoid-mental distance (3 fingers), and thyroid-to-mouth floor distance (2 fingers)',
+                [
+                    'Mallampati class 3, ASA class 3, and 2 hours of fasting',
+                    '3 loose teeth, 3 missing teeth, and 2 chopped teeth',
+                    '3 minutes of preoxygenation, 3 mg/kg thiopental, and 2 mg midazolam'
+                ],
+                'E = Evaluate 3-3-2 rule: 3 finger breadths incisors, 3 finger breadths hyoid-mental, 2 finger breadths thyroid-to-mouth floor.',
+                'قاعدة 3-3-2 تقيس فتحة القواطع 3 أصابع، المسافة الذقنية اللامية 3 أصابع، والدرقية لقاع الفم إصبعين.'
+            ),
+            () => buildMCQ(
+                'During Mallampati airway scoring, ONLY the soft palate is visible (uvula and faucial pillars are hidden). Which class is this and what does it predict?',
+                'أثناء فحص مالامباتي، يظهر الحنك الرخو فقط (تختفي اللهاة والأقواس الحنكية). ما هي هذه الدرجة وماذا تتوقع؟',
+                'Mallampati Class 3 — predicts difficult intubation',
+                [
+                    'Mallampati Class 1 — predicts easy intubation',
+                    'Mallampati Class 2 — predicts easy intubation',
+                    'Mallampati Class 4 — soft palate is completely invisible'
+                ],
+                'Class 3 = only soft palate visible; Class 4 = soft palate not visible. Both Class 3 and 4 predict difficult intubation.',
+                'Class 3 يظهر فيها الحنك الرخو فقط وهي مؤشر لصعوبة التنبيب الرغامي.'
+            ),
+            // ASA IV / V / VI Scenario
+            () => {
+                const item = pickRandom([
+                    { desc: 'a severe systemic disease that is a constant threat to life', cls: 'ASA IV', wrongs: ['ASA II', 'ASA III', 'ASA V'] },
+                    { desc: 'a moribund patient who is not expected to survive without the operation', cls: 'ASA V', wrongs: ['ASA III', 'ASA IV', 'ASA VI'] },
+                    { desc: 'a declared brain-dead patient whose organs are being removed for donor purposes', cls: 'ASA VI', wrongs: ['ASA IV', 'ASA V', 'ASA I'] }
+                ]);
+                return buildMCQ(
+                    `Which ASA Physical Status class describes ${item.desc}?`,
+                    `أي فئة من تصنيف ASA تصف: ${item.desc}؟`,
+                    item.cls,
+                    item.wrongs,
+                    'ASA IV = constant threat to life; ASA V = moribund patient; ASA VI = brain-dead organ donor.',
+                    'تصنيف ASA يحدد الخطورة البدنية للمريض من I إلى VI.'
+                );
+            },
+            // Investigations Indications
+            () => {
+                const lab = pickRandom([
+                    { q: 'anticoagulant therapy, bleeding diathesis, or liver disease', ans: 'INR and aPTT', wrongs: ['Sickle cell screen', 'Chest radiograph', 'Pregnancy (β-hCG)'] },
+                    { q: 'patients with new or worsening respiratory symptoms or signs', ans: 'Chest Radiograph', wrongs: ['INR and aPTT', 'Fasting glucose level', 'Sickle cell screen'] },
+                    { q: 'women of reproductive age prior to surgery', ans: 'Pregnancy test (β-hCG)', wrongs: ['INR and aPTT', 'Chest radiograph', 'Hb electrophoresis'] },
+                    { q: 'patients on digoxin, diuretics, or with hypertension and renal disease', ans: 'Electrolytes and Creatinine', wrongs: ['Chest radiograph', 'Pregnancy (β-hCG)', 'Sickle cell screen'] }
+                ]);
+                return buildMCQ(
+                    `Which preoperative investigation is specifically indicated for ${lab.q}?`,
+                    `أي فحص قبل العملية يُطلب خصيصاً في حالة: ${lab.q}؟`,
+                    lab.ans,
+                    lab.wrongs,
+                    'Pre-anesthetic investigations are tailored individually based on clinical indications rather than ordered routinely for everyone.',
+                    'الفحوصات تُطلب حسب حالة كل مريض ودواعيها السريرية وليس بشكل عشوائي للجميع.'
+                );
+            },
+            // Family History
+            () => buildMCQ(
+                'Asking about cholinesterase deficiency (Succinylcholine apnea) and malignant hyperthermia belongs to which part of the preanesthetic interview?',
+                'السؤال عن نقص الكولين إستراز (توقف التنفس مع السكسينيل كولين) وفرط الحرارة الخبيث يندرج ضمن أي جزء؟',
+                'Family history',
+                ['Social history', 'Chief complaint', 'Occupation history'],
+                'Family history specifically screens for inherited anesthetic complications such as cholinesterase deficiency and malignant hyperthermia.',
+                'السوابق العائلية (Family history) تكشف الاستعداد الوراثي لفرط الحرارة الخبيث ونقص الكولين إستراز.'
+            )
+        ];
+
+        function generateQuiz() {
+            userAnswers = {};
+            currentQuestions = [];
+            document.getElementById('seedBadge').textContent = `LIVE SEED: #${randInt(1000, 9999)}`;
+
+            const seen = new Set();
+            let guard = 0;
+            while (currentQuestions.length < 12 && guard < 150) {
+                guard++;
+                const q = pickRandom(qBankGenerators)();
+                if (!seen.has(q.qEn)) {
+                    seen.add(q.qEn);
+                    currentQuestions.push(q);
+                }
+            }
+            updateScore();
+            renderQuiz();
+        }
+
+        // =========================================================
+        // UI RENDERING
+        // =========================================================
+        function init() {
+            renderOverview();
+            renderAirwayAndASA();
+            renderLabsAndFasting();
+            updateSurgeryMatrix();
+            generateQuiz();
+            lucide.createIcons();
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        function toggleArabicMode() {
+            showArabic = !showArabic;
+            document.getElementById('arabicBtnLabel').textContent = showArabic ? 'إخفاء الشرح العربي' : 'إظهار الشرح العربي';
+            document.querySelectorAll('.ar-explain').forEach(el => {
+                el.style.display = showArabic ? '' : 'none';
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-teal-600', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-800');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-800');
+            activeBtn.classList.add('bg-teal-600', 'text-white', 'shadow-sm');
+            lucide.createIcons();
+        }
+
+        function renderOverview() {
+            document.getElementById('historyGrid').innerHTML = historyItems.map((h, i) => `
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold px-2 py-0.5 rounded bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 en-text">#${i + 1}</span>
+                        <h3 class="en-block text-sm font-extrabold text-slate-900 dark:text-white">${h.titleEn}</h3>
+                    </div>
+                    <p class="en-block text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${h.descEn}</p>
+                    <p class="ar-explain text-xs text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 leading-relaxed">${h.descAr}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderAirwayAndASA() {
+            document.getElementById('asaGrid').innerHTML = asaClasses.map(a => `
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-1.5">
+                    <span class="inline-block text-xs font-extrabold px-2.5 py-0.5 rounded-lg bg-${a.color}-100 text-${a.color}-800 dark:bg-${a.color}-950 dark:text-${a.color}-300 en-text">${a.code}</span>
+                    <p class="en-block text-sm font-bold text-slate-900 dark:text-white">${a.descEn}</p>
+                    <p class="ar-explain text-xs text-slate-600 dark:text-slate-400">${a.descAr}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('lemonList').innerHTML = lemonItems.map(l => `
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500 text-white font-extrabold flex items-center justify-center shrink-0 en-text">${l.letter}</span>
+                    <div class="flex-1">
+                        <div class="en-block text-sm font-extrabold text-slate-900 dark:text-white">${l.titleEn}</div>
+                        <div class="en-block text-xs text-slate-700 dark:text-slate-300 mt-0.5">${l.descEn}</div>
+                        <div class="ar-explain text-xs text-slate-500 dark:text-slate-400 mt-1">${l.descAr}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('mallampatiGrid').innerHTML = mallampatiClasses.map(m => `
+                <div class="p-3.5 rounded-xl border border-${m.color}-200 dark:border-${m.color}-800/60 bg-${m.color}-50/50 dark:bg-${m.color}-950/20 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-extrabold text-slate-900 dark:text-white en-text">${m.cls}</span>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-${m.color}-100 text-${m.color}-800 dark:bg-${m.color}-900 dark:text-${m.color}-200">${m.risk}</span>
+                    </div>
+                    <p class="en-block text-xs font-medium text-slate-800 dark:text-slate-200">${m.descEn}</p>
+                    <p class="ar-explain text-xs text-slate-600 dark:text-slate-400">${m.descAr}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderLabsAndFasting() {
+            document.getElementById('fastingGrid').innerHTML = fastingData.map(f => `
+                <div class="p-4 rounded-xl border border-${f.color}-200 dark:border-${f.color}-800/60 bg-${f.color}-50/60 dark:bg-${f.color}-950/25 text-center space-y-1.5">
+                    <div class="text-xl font-extrabold text-${f.color}-700 dark:text-${f.color}-300 en-text">${f.hours}</div>
+                    <div class="en-block text-center text-sm font-bold text-slate-900 dark:text-white">${f.titleEn}</div>
+                    <div class="ar-explain text-xs text-slate-600 dark:text-slate-400">${f.titleAr}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('labIndicationsGrid').innerHTML = labIndications.map(lab => `
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-2">
+                    <span class="inline-block text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 en-text">${lab.test}</span>
+                    <p class="en-block text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">${lab.indEn}</p>
+                    <p class="ar-explain text-xs text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 leading-relaxed">${lab.indAr}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateSurgeryMatrix() {
+            const grade = document.getElementById('surgGradeSelect').value;
+            const asa = document.getElementById('asaGradeSelect').value;
+            const res = surgeryMatrixTable[grade][asa];
+            document.getElementById('surgeryMatrixOutput').innerHTML = `
+                <div class="en-block text-sm font-bold text-slate-900 dark:text-white">${res.en}</div>
+                <div class="ar-explain text-xs sm:text-sm text-indigo-700 dark:text-indigo-300 mt-1.5" style="${showArabic ? '' : 'display:none;'}">${res.ar}</div>
+            `;
+        }
+
+        function renderQuiz() {
+            document.getElementById('quizContainer').innerHTML = currentQuestions.map((q, qIdx) => {
+                const chosen = userAnswers[q.uid];
+                const isAnswered = chosen !== undefined;
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3.5">
+                        <div class="flex items-start gap-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300 text-xs font-extrabold en-text shrink-0">Q${qIdx + 1}</span>
+                            <div class="space-y-1 flex-1">
+                                <h3 class="en-block text-base font-extrabold text-slate-900 dark:text-white">${q.qEn}</h3>
+                                <p class="ar-explain text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold" style="${showArabic ? '' : 'display:none;'}">${q.qAr}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-2 en-block">
+                            ${q.options.map((opt, idx) => {
+                                const letter = String.fromCharCode(65 + idx);
+                                let style = 'border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 hover:border-teal-400';
+                                if (isAnswered) {
+                                    if (opt.isCorrect) style = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 font-bold';
+                                    else if (idx === chosen) style = 'border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-200';
+                                    else style = 'border-slate-200 dark:border-slate-800 opacity-60';
+                                }
+                                return `
+                                    <button onclick="selectAnswer('${q.uid}', ${idx})" class="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all flex items-center justify-between gap-2 ${style}">
+                                        <span><strong>${letter}.</strong> ${opt.text}</span>
+                                        ${isAnswered && opt.isCorrect ? '<span class="text-emerald-600 font-extrabold shrink-0">✓</span>' : ''}
+                                        ${isAnswered && idx === chosen && !opt.isCorrect ? '<span class="text-rose-600 font-extrabold shrink-0">✗</span>' : ''}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        ${isAnswered ? `
+                            <div class="p-3.5 rounded-xl bg-teal-50/80 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60 space-y-1">
+                                <div class="en-block text-xs sm:text-sm font-semibold text-teal-900 dark:text-teal-200">${q.expEn}</div>
+                                <div class="ar-explain text-xs text-slate-700 dark:text-slate-300" style="${showArabic ? '' : 'display:none;'}">${q.expAr}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectAnswer(uid, idx) {
+            userAnswers[uid] = idx;
+            updateScore();
+            renderQuiz();
+        }
+
+        function updateScore() {
+            let score = 0;
+            currentQuestions.forEach(q => {
+                const c = userAnswers[q.uid];
+                if (c !== undefined && q.options[c] && q.options[c].isCorrect) score++;
+            });
+            document.getElementById('quizScoreDisplay').textContent = `${score} / ${currentQuestions.length}`;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
